@@ -53,15 +53,11 @@ InsightHub is a production-ready Django REST API platform for scheduling and man
 
 ## 🚀 Quick Start
 
-## 🚀 Getting Started
-
 ### Prerequisites
 
-- **Docker & Docker Compose** (Recommended)
-- **Python 3.11+** (For local development)
-- **PostgreSQL 15+** (If running locally)
-- **Redis** (For Celery broker)
-- **Git** (For version control)
+- [Docker](https://docs.docker.com/get-docker/) (20.0+)
+- [Docker Compose](https://docs.docker.com/compose/install/) (2.0+)
+- Git
 
 ### 1. Clone the Repository
 
@@ -70,29 +66,21 @@ git clone https://github.com/your-username/InsightHub.git
 cd InsightHub
 ```
 
-### 2. Set Up Git Workflow (Optional but Recommended)
+### 2. Quick Setup for GitHub Users
 
-```bash
-chmod +x git-setup.sh
-./git-setup.sh
-```
-
-This configures:
-- Git aliases for efficient workflow
-- Commit message templates
-- Branch protection reminders
-- Conventional commit standards
-
-📖 **Read our [Git Flow Guide](./GIT_FLOW.md)** for professional development practices.
-
-### 3. Environment Setup
-
-**Option A: Automatic Setup (Recommended)**
+We've provided a setup script that handles environment configuration:
 
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
+
+This script will:
+- Create a `.env` file from `.env.example`
+- Set up default configuration values
+- Display next steps
+
+#### Manual Environment Setup (Alternative)
 
 If you prefer manual setup, create a `.env` file:
 
@@ -113,7 +101,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,web
 
 > **📝 Note**: The `.env` file is gitignored for security. You'll need to create it after cloning.
 
-### 4. Start the Application
+### 3. Start the Application
 
 #### Option A: Using the Start Script (Recommended)
 
@@ -481,13 +469,7 @@ docker run -p 8000:8000 --env-file .env.production insighthub:production
    ./setup.sh
    ```
 
-3. **Set up Git workflow** (recommended for developers):
-   ```bash
-   chmod +x git-setup.sh
-   ./git-setup.sh
-   ```
-
-4. **Start the application**:
+3. **Start the application**:
    ```bash
    chmod +x start.sh
    ./start.sh
@@ -497,15 +479,11 @@ docker run -p 8000:8000 --env-file .env.production insighthub:production
 
 - 📄 **README.md** - Complete project documentation
 - 📄 **TESTING_GUIDE.md** - Comprehensive API testing examples
-- 📄 **GIT_FLOW.md** - Professional Git workflow guide
-- 📄 **CONTRIBUTING.md** - Contribution guidelines
 - 📄 **.env.example** - Environment variables template
 - 📄 **setup.sh** - Quick setup script for new users
-- 📄 **git-setup.sh** - Git workflow configuration
 - 📄 **start.sh** - Application startup script
 - 📄 **dev.sh** - Development helper commands
 - 🐳 **Docker** configuration for easy deployment
-- 🔧 **GitHub templates** - Issue and PR templates
 
 ### Environment Security
 
@@ -514,59 +492,6 @@ The `.env` file containing sensitive configuration is **not included** in the re
 ```bash
 cp .env.example .env
 ```
-
-## 🤝 Contributing
-
-We welcome contributions! This project follows professional development practices:
-
-### Quick Start for Contributors
-
-1. **Read the guides**:
-   - 📖 [Git Flow Guide](./GIT_FLOW.md) - Branching strategy and workflow
-   - 📖 [Contributing Guide](./CONTRIBUTING.md) - Detailed contribution guidelines
-
-2. **Set up development environment**:
-   ```bash
-   git clone https://github.com/your-username/InsightHub.git
-   cd InsightHub
-   ./git-setup.sh  # Configure Git workflow
-   ./setup.sh      # Set up environment
-   ./start.sh      # Start development server
-   ```
-
-3. **Create feature branch**:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-4. **Make changes and test**:
-   ```bash
-   # Make your changes
-   docker-compose exec web python manage.py test
-   ```
-
-5. **Submit Pull Request**:
-   - Use our PR template
-   - Follow conventional commit messages
-   - Ensure all tests pass
-
-### Development Standards
-
-- ✅ **GitHub Flow**: Simple, effective branching strategy
-- ✅ **Conventional Commits**: Standardized commit messages
-- ✅ **Code Review**: All changes reviewed before merge
-- ✅ **Test Coverage**: Comprehensive testing requirements
-- ✅ **Documentation**: Keep docs updated with changes
-- ✅ **Clean Code**: Self-documenting, well-structured code
-
-### Contribution Areas
-
-- 🐛 **Bug Fixes**: Report and fix issues
-- ✨ **Features**: Enhance scheduling capabilities
-- 📚 **Documentation**: Improve guides and examples
-- 🧪 **Testing**: Increase test coverage
-- 🚀 **Performance**: Optimize database queries
-- 🔒 **Security**: Strengthen authentication and validation
 
 ## 📝 License
 
