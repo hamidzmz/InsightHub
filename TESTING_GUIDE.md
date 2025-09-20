@@ -145,6 +145,8 @@ curl -X GET http://localhost:8000/api/tasks/available/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
+> Response is paginated with `count`, `next`, `previous`, and `results`.
+
 ## 📅 Schedule Management
 
 ### 1. Create a Schedule
@@ -185,6 +187,8 @@ curl -X POST http://localhost:8000/api/schedules/ \
   "next_run_time": "2025-09-21T09:00:00Z"
 }
 ```
+
+> Note: Celery Worker and Celery Beat must be running for scheduled executions.
 
 ### 2. List User Schedules
 
@@ -611,6 +615,7 @@ curl -X POST http://localhost:8000/api/schedules/ \
     "is_active": true
   }'
 ```
+> The API validates both type mismatches and unknown parameter keys.
 
 ### 3. Exceeding Job Limit (Regular Users)
 
@@ -649,6 +654,19 @@ SUPER_TOKEN=$(echo $SUPERUSER_LOGIN | jq -r '.access_token')
 curl -X GET http://localhost:8000/api/schedules/ \
   -H "Authorization: Bearer $SUPER_TOKEN"
 ```
+
+---
+
+## 🧪 Automated E2E Tests
+
+Run the included automated tests (ensure the stack is up):
+
+```bash
+python3 scripts/e2e_test.py
+python3 scripts/e2e_full_test.py
+```
+
+These cover registration, login, refresh, task listing, schedule CRUD, cron/parameter validation errors, RBAC, pagination, dynamic search, logs, and Swagger/Redoc reachability.
 
 ---
 

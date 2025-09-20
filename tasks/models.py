@@ -1,5 +1,4 @@
 from django.db import models
-from core.models import BaseModel
 
 
 class TaskDefinition(models.Model):
@@ -27,11 +26,13 @@ class TaskDefinition(models.Model):
         
     def validate_parameters(self, parameters):
         errors = {}
-        
-        for field_name, field_type in self.input_schema.items():
+        schema_fields = self.input_schema or {}
+        provided_fields = parameters.keys() if isinstance(parameters, dict) else []
+        for unknown in set(provided_fields) - set(schema_fields.keys()):
+            errors[unknown] = f"{unknown} is not a valid parameter"
+        for field_name, field_type in schema_fields.items():
             if field_name in parameters:
                 value = parameters[field_name]
-                
                 if field_type == 'string' and not isinstance(value, str):
                     errors[field_name] = f"{field_name} must be a string"
                 elif field_type == 'integer' and not isinstance(value, int):
@@ -40,5 +41,4 @@ class TaskDefinition(models.Model):
                     errors[field_name] = f"{field_name} must be a boolean"
                 elif field_type == 'float' and not isinstance(value, (int, float)):
                     errors[field_name] = f"{field_name} must be a number"
-        
         return errors

@@ -121,20 +121,20 @@ This script will:
 #### Option B: Manual Setup
 
 ```bash
-# Build and start services
-docker-compose up --build -d
+# Build and start services (Docker Compose v2)
+docker compose up --build -d
 
 # Run migrations
-docker-compose exec web python manage.py migrate
+docker compose exec web python manage.py migrate
 
 # Seed task definitions
-docker-compose exec web python manage.py seed_tasks
+docker compose exec web python manage.py seed_tasks
 
-# Create superuser
-docker-compose exec web python manage.py createsuperuser
+# Create superuser (recommended, admin not creatable via public registration)
+docker compose exec web python manage.py createsuperuser
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### 4. Access the Application
@@ -192,6 +192,8 @@ curl -X POST http://localhost:8000/api/auth/login/ \
 curl -X GET http://localhost:8000/api/tasks/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
+
+> The `GET /api/tasks/available/` endpoint returns a standard paginated shape: `count`, `next`, `previous`, `results`.
 
 ### 4. Schedule a Task
 
@@ -270,11 +272,12 @@ chmod +x dev.sh
 
 ## 📊 Business Rules & Limitations
 
-- **Regular Users**: Maximum 5 active scheduled jobs
+- **Regular Users**: Maximum 5 active scheduled jobs (toggle a schedule off to free a slot)
 - **Super Users**: Unlimited scheduled jobs + access to all user schedules
 - **Token Expiry**: Access tokens expire in 15 minutes, refresh tokens in 1 day
 - **Cron Validation**: All cron expressions are validated using the `croniter` library
 - **Parameter Validation**: Task parameters are validated against predefined schemas
+ - **Execution**: Celery Worker and Celery Beat must be running for schedules to execute
 
 ## 🏢 API Documentation
 
@@ -462,6 +465,12 @@ docker run -p 8000:8000 --env-file .env.production insighthub:production
 
 - 📄 **README.md** - Complete project documentation
 - 📄 **TESTING_GUIDE.md** - Comprehensive API testing examples
+ - 🧪 **Automated E2E Tests** - See `scripts/e2e_test.py` (smoke) and `scripts/e2e_full_test.py` (full suite). Run:
+
+   ```bash
+   python3 scripts/e2e_test.py
+   python3 scripts/e2e_full_test.py
+   ```
 - 📄 **.env.example** - Environment variables template
 - 📄 **setup.sh** - Quick setup script for new users
 - 📄 **start.sh** - Application startup script

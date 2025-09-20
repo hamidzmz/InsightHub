@@ -32,7 +32,7 @@ class Schedule(models.Model):
         if not croniter.is_valid(self.cron_expression):
             raise ValidationError({'cron_expression': 'Invalid cron expression'})
         
-        if not self.user.is_super_user:
+        if not self.user.is_superuser:
             active_count = Schedule.objects.filter(
                 user=self.user, 
                 is_active=True
@@ -51,5 +51,9 @@ class Schedule(models.Model):
     @property
     def next_run_time(self):
         from django.utils import timezone
+        import datetime
         cron = croniter(self.cron_expression, timezone.now())
-        return cron.get_next()
+        next_dt = cron.get_next(datetime.datetime)
+        if timezone.is_naive(next_dt):
+            next_dt = timezone.make_aware(next_dt, timezone.get_current_timezone())
+        return next_dt

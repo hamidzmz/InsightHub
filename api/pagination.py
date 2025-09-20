@@ -2,26 +2,27 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class DynamicPageSizePagination(PageNumberPagination):
-    page_size = 10  # Default for regular users
+    page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
     
     def get_page_size(self, request):
-        if request.user.is_authenticated and request.user.is_super_user:
-            # For super users, default to 100 unless specified
+        if request.user.is_authenticated and request.user.is_superuser:
             requested_size = request.query_params.get(self.page_size_query_param)
+            if not requested_size and request.method == 'POST' and hasattr(request, 'data'):
+                requested_size = request.data.get(self.page_size_query_param)
             if requested_size:
                 try:
                     return min(int(requested_size), self.max_page_size)
                 except (ValueError, TypeError):
                     pass
-            return 100
-        else:
-            # For regular users, default to 10 unless specified
-            requested_size = request.query_params.get(self.page_size_query_param)
-            if requested_size:
-                try:
-                    return min(int(requested_size), 10)
-                except (ValueError, TypeError):
-                    pass
-            return 10
+            return self.max_page_size
+        requested_size = request.query_params.get(self.page_size_query_param)
+        if not requested_size and request.method == 'POST' and hasattr(request, 'data'):
+            requested_size = request.data.get(self.page_size_query_param)
+        if requested_size:
+            try:
+                return min(int(requested_size), 10)
+            except (ValueError, TypeError):
+                pass
+        return 10

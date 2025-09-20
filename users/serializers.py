@@ -47,6 +47,7 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
+    is_super_user = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -56,3 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.CharField())
     def get_full_name(self, obj) -> str:
         return obj.full_name
+
+    @extend_schema_field(serializers.BooleanField())
+    def get_is_super_user(self, obj) -> bool:
+        return bool(getattr(obj, 'is_superuser', False))

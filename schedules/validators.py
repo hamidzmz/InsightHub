@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 def validate_user_schedule_limit(user, exclude_pk=None):
     from .models import Schedule
     
-    if not user.is_super_user:
+    if not user.is_superuser:
         query = Schedule.objects.filter(user=user, is_active=True)
         if exclude_pk:
             query = query.exclude(pk=exclude_pk)

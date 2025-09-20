@@ -25,7 +25,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_super_user:
+        if user.is_superuser:
             return Schedule.objects.select_related('user', 'task_definition').all()
         return Schedule.objects.select_related('user', 'task_definition').filter(user=user)
     
@@ -35,6 +35,26 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         elif self.action in ['update', 'partial_update']:
             return ScheduleUpdateSerializer
         return ScheduleSerializer
+
+    def create(self, request, *args, **kwargs):
+        create_serializer = ScheduleCreateSerializer(data=request.data, context=self.get_serializer_context())
+        create_serializer.is_valid(raise_exception=True)
+        instance = create_serializer.save()
+        read_serializer = ScheduleSerializer(instance, context=self.get_serializer_context())
+        return Response(read_serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        update_serializer = ScheduleUpdateSerializer(instance, data=request.data, partial=partial, context=self.get_serializer_context())
+        update_serializer.is_valid(raise_exception=True)
+        instance = update_serializer.save()
+        read_serializer = ScheduleSerializer(instance, context=self.get_serializer_context())
+        return Response(read_serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
     
     @extend_schema(
         responses={200: ExecutionLogSerializer(many=True)}
@@ -42,7 +62,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def logs(self, request, pk=None):
         schedule = self.get_object()
-        executions = ExecutionLog.objects.filter(schedule=schedule).order_by('-started_at')
+        executions = ExecutionLog.objects.select_related('schedule', 'schedule__user', 'schedule__task_definition').filter(schedule=schedule).order_by('-started_at')
         
         page = self.paginate_queryset(executions)
         if page is not None:
@@ -89,20 +109,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def search(self, request):
         queryset = self.get_queryset()
-        
-        filters = request.data.get('filters', {})
-        ordering = request.data.get('ordering', [])
-        
-        for field, value in filters.items():
-            if hasattr(Schedule, field):
-                queryset = queryset.filter(**{field: value})
-        
-        if ordering:
-            valid_fields = [f.name for f in Schedule._meta.fields]
-            safe_ordering = [o for o in ordering if o.lstrip('-') in valid_fields]
-            if safe_ordering:
-                queryset = queryset.order_by(*safe_ordering)
-        
+        from api.filters import DynamicFilterBackend
+        queryset = DynamicFilterBackend().filter_queryset(request, queryset, self)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
