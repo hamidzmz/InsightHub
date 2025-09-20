@@ -7,7 +7,11 @@ class DynamicPageSizePagination(PageNumberPagination):
     max_page_size = 100
     
     def get_page_size(self, request):
-        if request.user.is_authenticated and request.user.is_superuser:
+        # Determine admin using custom flag with fallback to Django's built-in
+        is_admin = False
+        if request.user.is_authenticated:
+            is_admin = getattr(request.user, 'is_super_user', False) or getattr(request.user, 'is_superuser', False)
+        if is_admin:
             requested_size = request.query_params.get(self.page_size_query_param)
             if not requested_size and request.method == 'POST' and hasattr(request, 'data'):
                 requested_size = request.data.get(self.page_size_query_param)
