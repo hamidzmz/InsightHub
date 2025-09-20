@@ -262,7 +262,6 @@ chmod +x dev.sh
 ./dev.sh makemigrations # Create new migrations
 ./dev.sh seed           # Seed task definitions
 ./dev.sh superuser      # Create superuser
-./dev.sh test           # Run tests
 ./dev.sh collectstatic  # Collect static files
 ./dev.sh restart [svc]  # Restart service (default: web)
 ./dev.sh down           # Stop all services
@@ -327,22 +326,6 @@ chmod +x dev.sh
 | `redis` | Redis broker | 6379 | redis-cli ping |
 | `celery` | Background worker | - | - |
 | `celery-beat` | Task scheduler | - | - |
-
-## 🧪 Running Tests
-
-```bash
-# Run all tests
-./dev.sh test
-
-# Run tests with coverage
-docker-compose exec web python manage.py test --keepdb --parallel
-
-# Run specific test file
-docker-compose exec web python manage.py test schedules.tests
-
-# Run tests in debug mode
-docker-compose exec web python manage.py test --debug-mode
-```
 
 ## 📁 Project Structure
 
